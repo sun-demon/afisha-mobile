@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Afisha</string>
+    <string name="title_explore">Поиск</string>
+    <string name="title_saved">Избранное</string>
+    <string name="title_my_tickets">Мои билеты</string>
+    <string name="title_profile">Профиль</string>
+</resources>

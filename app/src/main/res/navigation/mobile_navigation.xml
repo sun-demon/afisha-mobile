@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_explore">
+
+    <fragment
+        android:id="@+id/navigation_explore"
+        android:name="ru.variiix.afisha.ui.explore.ExploreFragment"
+        android:label="@string/title_explore"
+        tools:layout="@layout/fragment_explore" />
+
+    <fragment
+        android:id="@+id/navigation_saved"
+        android:name="ru.variiix.afisha.ui.saved.SavedFragment"
+        android:label="@string/title_saved"
+        tools:layout="@layout/fragment_saved" />
+
+    <fragment
+        android:id="@+id/navigation_my_tickets"
+        android:name="ru.variiix.afisha.ui.my_tickets.MyTicketsFragment"
+        android:label="@string/title_my_tickets"
+        tools:layout="@layout/fragment_my_tickets" />
+
+    <fragment
+        android:id="@+id/navigation_profile"
+        android:name="ru.variiix.afisha.ui.profile.ProfileFragment"
+        android:label="@string/title_profile"
+        tools:layout="@layout/fragment_profile" />
+</navigation>
