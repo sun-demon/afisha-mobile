@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/navigation_bar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white_smoke"
+    app:layout_constraintBottom_toBottomOf="parent">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_weight="1"
+        android:text="@string/title_explore"
+        android:textSize="16sp"
+        app:drawableTopCompat="@drawable/ic_search"
+        app:drawableTopCompatTint="@color/nav_explore"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_weight="1"
+        android:text="@string/title_saved"
+        android:textSize="16sp"
+        app:drawableTopCompat="@drawable/ic_heart"
+        app:drawableTopCompatTint="@color/nav_saved"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_weight="1"
+        android:text="@string/title_my_tickets"
+        android:textSize="16sp"
+        app:drawableTopCompat="@drawable/ic_ticket"
+        app:drawableTopCompatTint="@color/nav_my_tickets"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_weight="1"
+        android:text="@string/title_profile"
+        android:textSize="16sp"
+        app:drawableTopCompat="@drawable/ic_user"
+        app:drawableTopCompatTint="@color/nav_item"/>
+
+</LinearLayout>

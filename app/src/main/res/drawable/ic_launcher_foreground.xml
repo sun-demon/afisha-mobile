@@ -8,13 +8,13 @@
       android:translateX="189.44"
       android:translateY="189.44">
       <path
-          android:strokeColor="#FFFFFFFF"
+          android:strokeColor="@color/white"
           android:strokeWidth="100"
           android:strokeLineCap="round"
           android:strokeLineJoin="round"
           android:pathData="M280,820 L512,200 L744,820"/>
       <path
-          android:strokeColor="#FFFFFFFF"
+          android:strokeColor="@color/white"
           android:strokeWidth="100"
           android:strokeLineCap="round"
           android:pathData="M380,600 L644,600"/>

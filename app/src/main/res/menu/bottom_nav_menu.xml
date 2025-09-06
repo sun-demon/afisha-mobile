@@ -4,30 +4,23 @@
 
     <item
         android:id="@+id/navigation_explore"
-        android:icon="@drawable/ic_search_black_24dp"
+        android:icon="@drawable/ic_search"
         android:title="@string/title_explore"
-        app:itemIconTint="@color/nav_explore"
-        app:itemTextColor="@color/nav_explore" />
+        app:iconTint="@color/nav_saved"/>
 
     <item
         android:id="@+id/navigation_saved"
-        android:icon="@drawable/ic_heart_black_24dp"
-        android:title="@string/title_saved"
-        app:itemIconTint="@color/nav_saved"
-        app:itemTextColor="@color/nav_saved" />
+        android:icon="@drawable/ic_heart"
+        android:title="@string/title_saved" />
 
     <item
         android:id="@+id/navigation_my_tickets"
-        android:icon="@drawable/ic_ticket_black_24dp"
-        android:title="@string/title_my_tickets"
-        app:itemIconTint="@color/nav_my_tickets"
-        app:itemTextColor="@color/nav_my_tickets" />
+        android:icon="@drawable/ic_ticket"
+        android:title="@string/title_my_tickets" />
 
     <item
         android:id="@+id/navigation_profile"
-        android:icon="@drawable/ic_user_black_24dp"
-        android:title="@string/title_profile"
-        app:itemIconTint="@color/nav_profile"
-        app:itemTextColor="@color/nav_profile" />
+        android:icon="@drawable/ic_user"
+        android:title="@string/title_profile" />
 
 </menu>
