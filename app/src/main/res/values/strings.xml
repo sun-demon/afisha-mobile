@@ -1,7 +1,25 @@
 <resources>
     <string name="app_name">Afisha</string>
+
     <string name="title_explore">Поиск</string>
     <string name="title_saved">Избранное</string>
     <string name="title_my_tickets">Мои билеты</string>
     <string name="title_profile">Профиль</string>
+
+    <string name="moscow">Москва</string>
+    <string name="date">Дата</string>
+
+    <string-array name="rubrics">
+        <item name="all">Всё</item>
+        <item name="cinema">Кино</item>
+        <item name="concert">Концерты</item>
+        <item name="theatre">Театр</item>
+        <item name="kids">Детям</item>
+        <item name="art">Выставки</item>
+        <item name="sport">Спорт</item>
+        <item name="standup">Стендап</item>
+        <item name="excursions">Экскурсии</item>
+        <item name="show">Шоу</item>
+        <item name="quests">Квесты</item>
+    </string-array>
 </resources>

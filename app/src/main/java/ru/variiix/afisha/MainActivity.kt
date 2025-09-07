@@ -1,32 +1,45 @@
 package ru.variiix.afisha
 
-import android.content.res.ColorStateList
+import ru.variiix.afisha.views.NavigationView
+import ru.variiix.afisha.fragments.ExploreFragment
+import ru.variiix.afisha.fragments.MyTicketsFragment
+import ru.variiix.afisha.fragments.ProfileFragment
+import ru.variiix.afisha.fragments.SavedFragment
+
 import android.os.Bundle
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.content.ContextCompat
-import androidx.core.view.iterator
-import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupWithNavController
-import ru.variiix.afisha.databinding.ActivityMainBinding
+import androidx.fragment.app.Fragment
+
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AppCompatDelegate.setDefaultNightMode((AppCompatDelegate.MODE_NIGHT_NO))
 
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
 
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        val navigationView = findViewById<NavigationView>(R.id.navigation_view)
+        setupNavigation(navigationView)
+        showFragment(ExploreFragment.newInstance())
+    }
 
-//        val navView: BottomNavigationView = binding.navView
-//
-//        val navController = findNavController(R.id.nav_host_fragment_activity_main)
-//        navView.setupWithNavController(navController)
+    private fun setupNavigation(navigationView: NavigationView) {
+        navigationView.setOnNavigationItemSelectedListener { itemId ->
+            when (itemId) {
+                R.id.navigation_explore -> showFragment(ExploreFragment.newInstance())
+                R.id.navigation_saved -> showFragment(SavedFragment.newInstance())
+                R.id.navigation_my_tickets -> showFragment(MyTicketsFragment.newInstance())
+                R.id.navigation_profile -> showFragment(ProfileFragment.newInstance())
+            }
+        }
+    }
+
+    private fun showFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .commit()
     }
 }
