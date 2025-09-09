@@ -1,13 +1,14 @@
 package ru.variiix.afisha.models
 
+import com.google.gson.annotations.SerializedName
+
 data class Event(
-    val id: Int,
-
+    val id: String,
     val title: String,
-    val imageUrl: String,
-    val type: String,
-    val price: String,
-
-    val isFavorite: Boolean,
-    val isTicketBought: Boolean
+    @SerializedName("image_url") val imageUrl: String?,
+    val rating: Float?,
+    val price: String?,
+    val details: String,
+    @SerializedName("is_favorite") val isFavorite: Boolean,
+    @SerializedName("is_ticket_bought") val isTicketBought: Boolean
 )

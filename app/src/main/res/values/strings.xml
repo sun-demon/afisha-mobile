@@ -8,18 +8,38 @@
 
     <string name="moscow">Москва</string>
     <string name="date">Дата</string>
+    <string name="type_with_double_dot">Тип:</string>
+    <string name="event_image">Изображение мероприятия</string>
+    <string name="details">Детали</string>
+    <string name="title">Заголовок</string>
+    <string name="price">Цена</string>
+    <string name="rating_example">9.2</string>
 
     <string-array name="rubrics">
-        <item name="all">Всё</item>
-        <item name="cinema">Кино</item>
-        <item name="concert">Концерты</item>
-        <item name="theatre">Театр</item>
-        <item name="kids">Детям</item>
-        <item name="art">Выставки</item>
-        <item name="sport">Спорт</item>
-        <item name="standup">Стендап</item>
-        <item name="excursions">Экскурсии</item>
-        <item name="show">Шоу</item>
-        <item name="quests">Квесты</item>
+        <item>Всё</item>
+        <item>Кино</item>
+        <item>Концерты</item>
+        <item>Театр</item>
+        <item>Детям</item>
+        <item>Выставки</item>
+        <item>Спорт</item>
+        <item>Стендап</item>
+        <item>Экскурсии</item>
+        <item>Шоу</item>
+        <item>Квесты</item>
+    </string-array>
+
+    <string-array name="rubrics_query">
+        <item>all</item>
+        <item>cinema</item>
+        <item>concert</item>
+        <item>theatre</item>
+        <item>kids</item>
+        <item>art</item>
+        <item>sport</item>
+        <item>standup</item>
+        <item>excursions</item>
+        <item>show</item>
+        <item>quests</item>
     </string-array>
 </resources>

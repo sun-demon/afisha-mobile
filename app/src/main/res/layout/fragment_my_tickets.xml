@@ -1,24 +1,92 @@
-<?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.MyTicketsFragment">
+    android:background="@color/black"
+    android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/text_my_tickets"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:textAlignment="center"
-        android:textSize="20sp"
-        android:text="@string/title_my_tickets"
+        android:background="@color/light_gray"
+        android:paddingTop="10dp"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp"
+        android:paddingBottom="10dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/title_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:focusable="true"
+            android:text="@string/title_my_tickets"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:clickable="true"/>
+
+        <TextView
+            android:id="@+id/type_event_prefix"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/type_with_double_dot"
+            android:gravity="center"
+            android:layout_marginTop="10dp"
+            android:textSize="20sp"
+            app:layout_constraintTop_toBottomOf="@id/title_view"
+            app:layout_constraintLeft_toLeftOf="parent"  />
+
+        <ru.variiix.afisha.views.EventTypeSpinner
+            android:id="@+id/rubric_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:spinnerMode="dropdown"
+            android:background="@drawable/background_spinner"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="10dp"
+            app:drawableRightCompat="@drawable/icon_arrow_down_black"
+            app:drawableTint="@color/white"
+            app:layout_constraintTop_toBottomOf="@id/title_view"
+            app:layout_constraintLeft_toRightOf="@id/type_event_prefix" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/white"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="2dp"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+
+        <TextView
+            android:id="@+id/message_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@null"
+            android:textSize="18sp"
+            android:layout_centerInParent="true"
+            android:visibility="gone" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/events_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:padding="8dp"
+            android:scrollbarSize="0dp"
+            android:scrollbars="vertical" />
+
+    </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

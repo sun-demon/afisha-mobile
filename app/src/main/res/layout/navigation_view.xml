@@ -19,7 +19,7 @@
         android:textColor="@color/gray_to_black"
         android:paddingTop="16dp"
         android:paddingBottom="16dp"
-        app:drawableTopCompat="@drawable/icon_search_black_24dp"
+        app:drawableTopCompat="@drawable/icon_search_black"
         app:drawableTint="@color/gray_to_black"
         android:clickable="true"
         android:focusable="true" />
@@ -35,7 +35,7 @@
         android:textColor="@color/gray_to_black"
         android:paddingTop="16dp"
         android:paddingBottom="16dp"
-        app:drawableTopCompat="@drawable/icon_heart_black_24dp"
+        app:drawableTopCompat="@drawable/icon_heart_red"
         app:drawableTint="@color/gray_to_red" />
 
     <androidx.appcompat.widget.AppCompatTextView
@@ -49,7 +49,7 @@
         android:textColor="@color/gray_to_black"
         android:paddingTop="16dp"
         android:paddingBottom="16dp"
-        app:drawableTopCompat="@drawable/icon_ticket_black_24dp"
+        app:drawableTopCompat="@drawable/icon_ticket_green"
         app:drawableTint="@color/gray_to_green" />
 
     <androidx.appcompat.widget.AppCompatTextView
@@ -63,7 +63,7 @@
         android:textColor="@color/gray_to_black"
         android:paddingTop="16dp"
         android:paddingBottom="16dp"
-        app:drawableTopCompat="@drawable/icon_user_black_24dp"
+        app:drawableTopCompat="@drawable/icon_user_black"
         app:drawableTint="@color/gray_to_black" />
 
 </LinearLayout>

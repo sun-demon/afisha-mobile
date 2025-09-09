@@ -30,14 +30,5 @@ class EventTypeSpinner @JvmOverloads constructor(
         setSelection(0)
     }
 
-
-//    override fun onFocusChanged(gainFocus: Boolean, direction: Int, previouslyFocusedRect: Rect?) {
-//        background = ContextCompat.getDrawable(
-//            context,
-//            if (gainFocus) R.drawable.background_spinner else R.drawable.background_spinner_selected
-//        )
-//        super.onFocusChanged(gainFocus, direction, previouslyFocusedRect)
-//    }
-
     private fun Int.dpToPx(): Int = (this * resources.displayMetrics.density).toInt()
 }

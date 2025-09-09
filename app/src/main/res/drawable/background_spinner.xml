@@ -13,5 +13,5 @@
         android:id="@+id/arrow_layer"
         android:right="8dp"
         android:gravity="end|center_vertical"
-        android:drawable="@drawable/icon_arrow_down_white_24dp"/>
+        android:drawable="@drawable/icon_arrow_down_white"/>
 </layer-list>
