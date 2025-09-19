@@ -10,6 +10,8 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
+import ru.variiix.afisha.utils.LocalFavorites
+import ru.variiix.afisha.utils.UserSession
 
 
 class MainActivity : AppCompatActivity() {
@@ -19,6 +21,10 @@ class MainActivity : AppCompatActivity() {
         AppCompatDelegate.setDefaultNightMode((AppCompatDelegate.MODE_NIGHT_NO))
 
         super.onCreate(savedInstanceState)
+
+        UserSession.init(this)
+        LocalFavorites.init(this)
+
         setContentView(R.layout.activity_main)
 
         val navigationView = findViewById<NavigationView>(R.id.navigation_view)
@@ -37,7 +43,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun showFragment(fragment: Fragment) {
+    fun showFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)
             .commit()

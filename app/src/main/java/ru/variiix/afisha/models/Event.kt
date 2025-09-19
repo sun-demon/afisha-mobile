@@ -10,5 +10,5 @@ data class Event(
     val price: String?,
     val details: String,
     @SerializedName("is_favorite") val isFavorite: Boolean,
-    @SerializedName("is_ticket_bought") val isTicketBought: Boolean
+    @SerializedName("is_ticket") val isTicket: Boolean
 )

@@ -5,24 +5,23 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:anrdoid="http://schemas.android.com/tools"
     android:layout_marginTop="10dp"
-    android:focusable="true"
     android:orientation="vertical"
     android:padding="8dp"
-    android:clickable="true"
     android:layout_marginBottom="20dp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
     <ImageView
         android:id="@+id/image_view"
-        android:layout_width="380dp"
-        android:layout_height="220dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:src="@drawable/icon_placeholder_gray"
         android:scaleType="centerCrop"
         android:contentDescription="@string/event_image"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"/>
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintDimensionRatio="16:9"/>
 
     <TextView
         android:id="@+id/rating_view"
@@ -40,15 +39,30 @@
 
     <ImageButton
         android:id="@+id/favorite_button"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:contentDescription="@string/title_saved"
         anrdoid:foreground="@null"
         android:background="@drawable/icon_heart"
+        android:focusable="true"
+        android:clickable="true"
+        android:layout_margin="6dp"
+        android:padding="6dp"
+        android:duplicateParentState="false"
+        app:layout_constraintRight_toRightOf="@id/image_view"
+        app:layout_constraintTop_toTopOf="@id/image_view" />
+
+    <ImageView
+        android:id="@+id/ticket_icon"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/icon_ticket_green"
+        android:contentDescription="@string/title_my_tickets"
         android:layout_margin="6dp"
         android:padding="6dp"
         app:layout_constraintRight_toRightOf="@id/image_view"
-        app:layout_constraintTop_toTopOf="@id/image_view" />
+        app:layout_constraintTop_toTopOf="@id/image_view"
+        android:visibility="gone"/>
 
     <TextView
         android:id="@+id/title_view"
