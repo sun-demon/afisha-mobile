@@ -39,7 +39,6 @@ class ExploreFragment : Fragment() {
     private lateinit var eventsView: RecyclerView
 
     private lateinit var adapter: EventAdapter
-    private val events = mutableListOf<Event>()
 
     private var currentRubric: String = "all"
     private var isLoading = false
@@ -125,7 +124,7 @@ class ExploreFragment : Fragment() {
 
                 try {
                     if (isFavorite) {
-                        removeFavoriteOnServer(event.id, token)
+                        removeFavoriteFromServer(event.id, token)
                         LocalFavorites.remove(event.id) // sync local
                     } else {
                         addFavoriteOnServer(event.id, token)
@@ -161,7 +160,7 @@ class ExploreFragment : Fragment() {
         }
     }
 
-    suspend fun removeFavoriteOnServer(eventId: String, token: String) {
+    suspend fun removeFavoriteFromServer(eventId: String, token: String) {
         withContext(Dispatchers.IO) {
             val client = OkHttpClient()
             val request = Request.Builder()
@@ -220,7 +219,7 @@ class ExploreFragment : Fragment() {
             try {
                 val newEvents = fetchEventsFromServer(currentRubric, offset, limit)
                 if (newEvents.isEmpty()) {
-                    if (events.isEmpty()) {
+                    if (adapter.currentList.isEmpty()) {
                         showMessage("События не найдены")
                     }
                     hasMore = false
@@ -279,7 +278,7 @@ class ExploreFragment : Fragment() {
     private fun showMessage(message: String) {
         messageView.text = message
         messageView.visibility = View.VISIBLE
-        messageView.visibility = View.GONE
+        eventsView.visibility = View.GONE
     }
 
     private fun isNetworkAvailable(context: Context): Boolean {

@@ -34,8 +34,12 @@ object LocalFavorites {
         prefs.edit { putStringSet(KEY_IDS, ids) }
     }
 
-    fun clear() {
-        ids.clear()
-        save()
+    fun getParam(): String? {
+        return ids.joinToString(",").ifEmpty { "," }
     }
+
+//    fun clear() {
+//        ids.clear()
+//        save()
+//    }
 }
