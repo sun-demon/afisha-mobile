@@ -19,8 +19,8 @@
     <string name="login">Войти</string>
     <string name="registration">Регистрация</string>
     <string name="name">Имя</string>
-    <string name="register">Зарегистрироваться</string>
-    <string name="do_you_have_account_login">Уже есть аккаунт? Войти</string>
+    <string name="register"><u>Зарегистрироваться</u></string>
+    <string name="do_you_have_account_login"><u>Уже есть аккаунт? Войти</u></string>
     <string name="avatar">Аватар</string>
 
     <string-array name="rubrics">

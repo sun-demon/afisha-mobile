@@ -40,7 +40,10 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="24dp"
-            app:layout_constraintTop_toBottomOf="@id/title_view">
+            app:layout_constraintTop_toBottomOf="@id/title_view"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent">
 
             <!-- login form -->
             <LinearLayout
@@ -69,7 +72,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/login"
-                    android:layout_marginTop="16dp" />
+                    android:textSize="18sp"
+                    android:layout_marginTop="16dp"
+                    android:textColor="@color/black"
+                    android:backgroundTint="@color/gray"/>
 
                 <TextView
                     android:id="@+id/to_register_text"
@@ -78,6 +84,8 @@
                     android:text="@string/register"
                     android:textColor="@color/teal_200"
                     android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:layout_gravity="center"
                     android:layout_marginTop="12dp"
                     android:clickable="true"
                     android:focusable="true" />
@@ -90,6 +98,35 @@
                 android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+
+                <!-- avatar with it changing button -->
+                <FrameLayout
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="16dp">
+
+                    <!-- round avatar -->
+                    <ImageView
+                        android:id="@+id/avatar_image"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/icon_person"
+                        android:scaleType="centerCrop"
+                        android:background="@drawable/background_circle"
+                        android:padding="8dp" />
+
+                    <!-- edit button (right bottom) -->
+                    <ImageButton
+                        android:id="@+id/edit_avatar_button"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:src="@drawable/icon_edit"
+                        android:background="@drawable/background_circle_button"
+                        android:tint="@color/white"
+                        android:layout_gravity="bottom|end"
+                        android:contentDescription="edit avatar" />
+                </FrameLayout>
 
                 <EditText
                     android:id="@+id/nickname_input_register"
@@ -119,7 +156,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/register"
-                    android:layout_marginTop="16dp" />
+                    android:textSize="18sp"
+                    android:layout_marginTop="16dp"
+                    android:textColor="@color/black"
+                    android:backgroundTint="@color/gray" />
 
                 <TextView
                     android:id="@+id/to_login_text"
@@ -130,7 +170,9 @@
                     android:textStyle="bold"
                     android:layout_marginTop="12dp"
                     android:clickable="true"
-                    android:focusable="true" />
+                    android:focusable="true"
+                    android:textSize="16sp"
+                    android:layout_gravity="center" />
             </LinearLayout>
         </LinearLayout>
 
