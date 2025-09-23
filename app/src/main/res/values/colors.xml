@@ -9,4 +9,6 @@
     <color name="gray">#999999</color>
     <color name="red">#EB3223</color>
     <color name="green">#75F94C</color>
+
+    <color name="teal_200">#03DAC5</color>
 </resources>
