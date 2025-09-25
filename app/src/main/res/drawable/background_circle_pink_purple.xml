@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:aapt="http://schemas.android.com/aapt"
     android:width="108dp"
@@ -6,8 +7,9 @@
     android:viewportHeight="1024">
 
     <path
-        android:pathData="M0,0h1024v1024h-1024z"
-        android:strokeColor="@color/black">
+        android:pathData="M512,512m-512,0a512,512 0,1 1,1024 0a512,512 0,1 1,-1024 0"
+        android:strokeColor="@color/black"
+        android:strokeWidth="1">
         <aapt:attr name="android:fillColor">
             <gradient
                 android:startX="0"

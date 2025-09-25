@@ -17,7 +17,6 @@ import ru.variiix.afisha.R
 import ru.variiix.afisha.models.Event
 import androidx.core.graphics.toColorInt
 import ru.variiix.afisha.utils.LocalFavorites
-import ru.variiix.afisha.utils.UserSession
 
 class EventAdapter(
     private val onEventClick: (event: Event) -> Unit,

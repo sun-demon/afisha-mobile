@@ -16,13 +16,13 @@ import ru.variiix.afisha.utils.UserSession
 
 class ProfileFragment : Fragment() {
 
-    private lateinit var loginLayout: View
+    private lateinit var authorizationForms: View
     private lateinit var profileLayout: View
     private lateinit var loginForm: View
     private lateinit var registerForm: View
 
     private lateinit var avatarView: ImageView
-    private lateinit var nicknameView: TextView
+    private lateinit var nameView: TextView
     private lateinit var emailView: TextView
 
     override fun onCreateView(
@@ -36,13 +36,13 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        loginLayout = view.findViewById(R.id.login_layout)
+        authorizationForms = view.findViewById(R.id.authorization_forms)
         profileLayout = view.findViewById(R.id.profile_layout)
         loginForm = view.findViewById(R.id.login_form)
         registerForm = view.findViewById(R.id.register_form)
 
         avatarView = view.findViewById(R.id.avatar_view)
-        nicknameView = view.findViewById(R.id.nickname_view)
+        nameView = view.findViewById(R.id.name_view)
         emailView = view.findViewById(R.id.email_view)
 
         val loginButton = view.findViewById<Button>(R.id.login_button)
@@ -50,7 +50,7 @@ class ProfileFragment : Fragment() {
         val logoutButton = view.findViewById<Button>(R.id.logout_button)
         val toRegisterText = view.findViewById<TextView>(R.id.to_register_text)
         val toLoginText = view.findViewById<TextView>(R.id.to_login_text)
-        val changeAvatarButton = view.findViewById<ImageButton>(R.id.change_avatar_button)
+        val editAvatarButton = view.findViewById<ImageButton>(R.id.edit_avatar_button)
 
         if (UserSession.isAuthorized()) {
             showProfile()
@@ -79,28 +79,28 @@ class ProfileFragment : Fragment() {
             showLoginForm()
         }
 
-        changeAvatarButton.setOnClickListener {
+        editAvatarButton.setOnClickListener {
             Toast.makeText(requireContext(), "Выбор аватара (TODO)", Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun showProfile() {
-        loginLayout.visibility = View.GONE
+        authorizationForms.visibility = View.GONE
         profileLayout.visibility = View.VISIBLE
         val user = UserSession.getUser()
-        nicknameView.text = user?.nickname ?: "Неизвестный"
+        nameView.text = user?.name ?: "Неизвестный"
         emailView.text = user?.email ?: ""
     }
 
     private fun showLoginForm() {
-        loginLayout.visibility = View.VISIBLE
+        authorizationForms.visibility = View.VISIBLE
         profileLayout.visibility = View.GONE
         loginForm.visibility = View.VISIBLE
         registerForm.visibility = View.GONE
     }
 
     private fun showRegisterForm() {
-        loginLayout.visibility = View.VISIBLE
+        authorizationForms.visibility = View.VISIBLE
         profileLayout.visibility = View.GONE
         loginForm.visibility = View.GONE
         registerForm.visibility = View.VISIBLE

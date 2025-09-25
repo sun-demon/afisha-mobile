@@ -22,6 +22,14 @@
     <string name="register"><u>Зарегистрироваться</u></string>
     <string name="do_you_have_account_login"><u>Уже есть аккаунт? Войти</u></string>
     <string name="avatar">Аватар</string>
+    <string name="entry">Вход</string>
+    <string name="fisha">фиша</string>
+    <string name="authorization">Авторизация</string>
+    <string name="edit_avatar">edit avatar</string>
+    <string name="repeat_password">Повтор пароля</string>
+    <string name="logout">Выйти</string>
+    <string name="about_us">О нас</string>
+    <string name="feedback">Обратная связь</string>
 
     <string-array name="rubrics">
         <item>Всё</item>
