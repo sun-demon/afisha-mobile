@@ -38,8 +38,12 @@ object LocalFavorites {
         return ids.joinToString(",").ifEmpty { "," }
     }
 
-//    fun clear() {
-//        ids.clear()
-//        save()
-//    }
+    fun isEmpty(): Boolean {
+        return ids.isEmpty()
+    }
+
+    fun clear() {
+        ids.clear()
+        save()
+    }
 }

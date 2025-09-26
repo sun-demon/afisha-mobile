@@ -17,12 +17,12 @@ import ru.variiix.afisha.R
 import ru.variiix.afisha.models.Event
 import androidx.core.graphics.toColorInt
 import ru.variiix.afisha.utils.LocalFavorites
+import androidx.core.view.isGone
 
 class EventAdapter(
     private val onEventClick: (event: Event) -> Unit,
     private val onFavoriteClick: (Event) -> Unit
 ) : ListAdapter<Event, EventAdapter.EventViewHolder>(EventDiffCallback()) {
-
     class EventViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val root: ConstraintLayout = itemView.findViewById(R.id.root)
         val title: TextView = itemView.findViewById(R.id.title_view)

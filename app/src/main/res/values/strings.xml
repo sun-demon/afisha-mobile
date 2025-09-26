@@ -30,6 +30,7 @@
     <string name="logout">Выйти</string>
     <string name="about_us">О нас</string>
     <string name="feedback">Обратная связь</string>
+    <string name="username_or_email">Имя или Email</string>
 
     <string-array name="rubrics">
         <item>Всё</item>
@@ -56,6 +57,6 @@
         <item>standup</item>
         <item>excursions</item>
         <item>show</item>
-        <item>quests</item>
+        <item>quest</item>
     </string-array>
 </resources>

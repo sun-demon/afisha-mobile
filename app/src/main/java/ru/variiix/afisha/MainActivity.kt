@@ -1,10 +1,10 @@
 package ru.variiix.afisha
 
 import ru.variiix.afisha.views.NavigationView
-import ru.variiix.afisha.fragments.ExploreFragment
-import ru.variiix.afisha.fragments.MyTicketsFragment
+import ru.variiix.afisha.fragments.EventsFragment
+import ru.variiix.afisha.fragments.TicketsFragment
 import ru.variiix.afisha.fragments.ProfileFragment
-import ru.variiix.afisha.fragments.SavedFragment
+import ru.variiix.afisha.fragments.FavoritesFragment
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -29,15 +29,15 @@ class MainActivity : AppCompatActivity() {
 
         val navigationView = findViewById<NavigationView>(R.id.navigation_view)
         setupNavigation(navigationView)
-        showFragment(ExploreFragment.newInstance())
+        showFragment(EventsFragment.newInstance())
     }
 
     private fun setupNavigation(navigationView: NavigationView) {
         navigationView.setOnNavigationItemSelectedListener { itemId ->
             when (itemId) {
-                R.id.navigation_explore -> showFragment(ExploreFragment.newInstance())
-                R.id.navigation_saved -> showFragment(SavedFragment.newInstance())
-                R.id.navigation_my_tickets -> showFragment(MyTicketsFragment.newInstance())
+                R.id.navigation_events -> showFragment(EventsFragment.newInstance())
+                R.id.navigation_favorites -> showFragment(FavoritesFragment.newInstance())
+                R.id.navigation_tickets -> showFragment(TicketsFragment.newInstance())
                 R.id.navigation_profile -> showFragment(ProfileFragment.newInstance())
             }
         }

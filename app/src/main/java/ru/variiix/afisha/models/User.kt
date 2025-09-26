@@ -1,8 +1,10 @@
 package ru.variiix.afisha.models
 
+import com.google.gson.annotations.SerializedName
+
 data class User(
-    val id: String,
-    val name: String,
+    val id: Int,
+    val username: String,
     val email: String,
-    val avatarUrl: String? = null
+    @SerializedName("avatar_url") val avatarUrl: String? = null
 )

@@ -1,5 +1,6 @@
 package ru.variiix.afisha.fragments
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
@@ -9,37 +10,28 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.gson.Gson
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import okhttp3.OkHttpClient
-import okhttp3.Request
 import ru.variiix.afisha.MainActivity
 import ru.variiix.afisha.R
 import ru.variiix.afisha.adapters.EventAdapter
+import ru.variiix.afisha.databinding.FragmentEventsBinding
 import ru.variiix.afisha.models.Event
-import ru.variiix.afisha.models.EventsResponse
+import ru.variiix.afisha.network.ApiClient
 import ru.variiix.afisha.utils.LocalFavorites
 import ru.variiix.afisha.utils.UserSession
-import ru.variiix.afisha.views.EventTypeSpinner
-import java.io.IOException
 
-
-class SavedFragment : Fragment() {
-
-    private lateinit var rubricView: EventTypeSpinner
-    private lateinit var messageView: TextView
-    private lateinit var eventsView: RecyclerView
+class EventsFragment : Fragment() {
+    private var _binding: FragmentEventsBinding? = null
+    private val binding get() = _binding!!
 
     private lateinit var adapter: EventAdapter
+
     private var currentRubric: String = "all"
     private var isLoading = false
     private var hasMore = true
@@ -52,28 +44,28 @@ class SavedFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return inflater.inflate(R.layout.fragment_saved, container, false)
+        _binding = FragmentEventsBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        rubricView = view.findViewById(R.id.rubric_spinner)
-        messageView = view.findViewById(R.id.message_view)
-        eventsView = view.findViewById(R.id.events_view)
-
-        // events adapter
         adapter = EventAdapter(
             { onEventClick(it) },
             { onFavoriteClick(it) }
         )
 
         val layoutManager = LinearLayoutManager(requireContext())
-        eventsView.layoutManager = layoutManager
-        eventsView.adapter = adapter
+        binding.eventsView.layoutManager = layoutManager
+        binding.eventsView.adapter = adapter
 
-        // on rubric select
-        rubricView.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        binding.rubricSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
                 val rubric = resources.getStringArray(R.array.rubrics_query)[position]
                 if (rubric != currentRubric) {
@@ -85,8 +77,7 @@ class SavedFragment : Fragment() {
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
 
-        // autoload on scroll
-        eventsView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        binding.eventsView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
                 if (dy > 0 && !isLoading && hasMore) { // only to bottom scroll
@@ -119,55 +110,54 @@ class SavedFragment : Fragment() {
         if (UserSession.isAuthorized()) {
             lifecycleScope.launch {
                 val token = UserSession.getToken() ?: return@launch
+                val isFavorite = LocalFavorites.contains(event.id)
+
                 try {
-                    removeFavoriteFromServer(event.id, token)
-                    LocalFavorites.remove(event.id)
-
-                    val updatedList = adapter.currentList.toMutableList()
-                    updatedList.remove(event)
-                    adapter.submitList(updatedList)
-
-                    if (updatedList.isEmpty()) {
-                        showMessage("У вас нет избранных мероприятий")
+                    if (isFavorite) {
+                        removeFavoriteFromServer(event.id, token)
+                        LocalFavorites.remove(event.id)
+                    } else {
+                        addFavoriteOnServer(event.id, token)
+                        LocalFavorites.add(event.id)
                     }
                 } catch (e: Exception) {
-                    Log.e("Favorites", "Failed to remove favorite", e)
+                    Log.e("Favorites", "Failed to toggle favorite", e)
                 }
             }
         } else {
-            LocalFavorites.remove(event.id)
-
-            val updatedList = adapter.currentList.toMutableList()
-            updatedList.remove(event)
-            adapter.submitList(updatedList)
-
-            if (updatedList.isEmpty()) {
-                showMessage("У вас нет избранных мероприятий")
+            if (LocalFavorites.contains(event.id)) {
+                LocalFavorites.remove(event.id)
+            } else {
+                LocalFavorites.add(event.id)
             }
         }
     }
 
-
-
-    suspend fun removeFavoriteFromServer(eventId: String, token: String) {
-        withContext(Dispatchers.IO) {
-            val client = OkHttpClient()
-            val request = Request.Builder()
-                .url("https://yourserver.com/api/favorites/$eventId")
-                .delete()
-                .addHeader("Authorization", "Bearer $token")
-                .build()
-            val response = client.newCall(request).execute()
-            if (!response.isSuccessful) throw IOException("Failed: ${response.code}")
-        }
+    suspend fun addFavoriteOnServer(eventId: String, token: String) {
+        ApiClient.favoritesApi.addFavorite(eventId, "Bearer $token")
     }
 
+    suspend fun removeFavoriteFromServer(eventId: String, token: String) {
+        ApiClient.favoritesApi.removeFavorite(eventId, "Bearer $token")
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
     private fun showBuyTicketDialog(event: Event) {
         AlertDialog.Builder(requireContext())
             .setTitle("Купить билет")
             .setMessage("Хотите купить билет на \"${event.title}\"?")
             .setPositiveButton("Купить") { dialog, _ ->
-                // здесь вызов API покупки билета
+                lifecycleScope.launch {
+                    val token = UserSession.getToken() ?: return@launch
+                    try {
+                        ApiClient.ticketsApi.addTicket(event.id, "Bearer $token")
+                        Toast.makeText(requireContext(), "Билет куплен", Toast.LENGTH_SHORT).show()
+                        event.isTicket = true
+                        adapter.notifyDataSetChanged()
+                    } catch (_: Exception) {
+                        Toast.makeText(requireContext(), "Не удалось купить билет", Toast.LENGTH_SHORT).show()
+                    }
+                }
                 dialog.dismiss()
             }
             .setNegativeButton("Отмена") { dialog, _ -> dialog.dismiss() }
@@ -189,8 +179,8 @@ class SavedFragment : Fragment() {
         adapter.submitList(emptyList())
         offset = 0
         hasMore = true
-        messageView.visibility = View.GONE
-        eventsView.visibility = View.VISIBLE
+        binding.messageView.visibility = View.GONE
+        binding.eventsView.visibility = View.VISIBLE
         loadEvents()
     }
 
@@ -202,20 +192,21 @@ class SavedFragment : Fragment() {
         if (isLoading || !hasMore) {
             return
         }
-
         isLoading = true
+        if (adapter.currentList.isEmpty()) {
+            binding.progressBar.visibility = View.VISIBLE
+        }
         lifecycleScope.launch {
             try {
                 val newEvents = fetchEventsFromServer(currentRubric, offset, limit)
                 if (newEvents.isEmpty()) {
                     if (adapter.currentList.isEmpty()) {
-                        showMessage("У вас нет избранных мероприятий")
-//                        showMessage("События не найдены")
+                        showMessage("События не найдены")
                     }
                     hasMore = false
                 } else {
-                    messageView.visibility = View.GONE
-                    eventsView.visibility = View.VISIBLE
+                    binding.messageView.visibility = View.GONE
+                    binding.eventsView.visibility = View.VISIBLE
                     val updatedList = adapter.currentList.toMutableList()
                     updatedList.addAll(newEvents)
                     adapter.submitList(updatedList)
@@ -225,9 +216,10 @@ class SavedFragment : Fragment() {
                 if (adapter.currentList.isEmpty()) {
                     showMessage("Не удалось установить соединение с сервером")
                 }
-                Log.e("SavedFragment", "Error loading events", e)
+                Log.e("ExploreFragment", "Error loading events", e)
             } finally {
                 isLoading = false
+                binding.progressBar.visibility = View.GONE
             }
         }
     }
@@ -236,47 +228,20 @@ class SavedFragment : Fragment() {
         rubric: String,
         offset: Int,
         limit: Int
-    ): List<Event> = withContext(Dispatchers.IO) {
-        val client = OkHttpClient()
-        val url = buildString {
-            val params = mutableListOf<String>()
-            if (rubric != "all") {
-                params.add("rubric=$rubric")
-            }
-            params.add("offset=$offset")
-            params.add("limit=$limit")
-
-            if (UserSession.isAuthorized()) {
-                append("https://afisha.ddns.net/favorites")
-            } else {
-                append("https://afisha.ddns.net/api/events")
-                params.add("id=${LocalFavorites.getParam()}")
-            }
-
-
-            if (params.isNotEmpty()) {
-                append("?${params.joinToString("&")}")
-            }
-        }
-
-        val request = Request.Builder().url(url).build()
-        client.newCall(request).execute().use { response ->
-            if (!response.isSuccessful) {
-                throw IOException("Unexpected code $response")
-            }
-
-            val body = response.body.string()
-            val gson = Gson()
-
-            val eventsResponse = gson.fromJson(body, EventsResponse::class.java)
-            eventsResponse.events
-        }
+    ): List<Event> {
+        val response = ApiClient.eventsApi.getEvents(
+            rubric.takeIf { it != "all" },
+            offset,
+            limit,
+            token = "Bearer ${UserSession.getToken()}"
+        )
+        return response.events
     }
 
     private fun showMessage(message: String) {
-        messageView.text = message
-        messageView.visibility = View.VISIBLE
-        eventsView.visibility = View.GONE
+        binding.messageView.text = message
+        binding.messageView.visibility = View.VISIBLE
+        binding.eventsView.visibility = View.GONE
     }
 
     private fun isNetworkAvailable(context: Context): Boolean {
@@ -287,6 +252,6 @@ class SavedFragment : Fragment() {
     }
 
     companion object {
-        fun newInstance() = SavedFragment()
+        fun newInstance() = EventsFragment()
     }
 }

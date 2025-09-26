@@ -1,109 +1,302 @@
 package ru.variiix.afisha.fragments
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.TextView
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
-import ru.variiix.afisha.R
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody.Companion.toRequestBody
+import retrofit2.HttpException
+import ru.variiix.afisha.databinding.FragmentProfileBinding
+import ru.variiix.afisha.network.ApiClient
+import ru.variiix.afisha.utils.LocalFavorites
 import ru.variiix.afisha.utils.UserSession
+import java.io.IOException
 
 
 class ProfileFragment : Fragment() {
-
-    private lateinit var authorizationForms: View
-    private lateinit var profileLayout: View
-    private lateinit var loginForm: View
-    private lateinit var registerForm: View
-
-    private lateinit var avatarView: ImageView
-    private lateinit var nameView: TextView
-    private lateinit var emailView: TextView
+    private var _binding: FragmentProfileBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return inflater.inflate(R.layout.fragment_profile, container, false)
+        _binding = FragmentProfileBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        authorizationForms = view.findViewById(R.id.authorization_forms)
-        profileLayout = view.findViewById(R.id.profile_layout)
-        loginForm = view.findViewById(R.id.login_form)
-        registerForm = view.findViewById(R.id.register_form)
-
-        avatarView = view.findViewById(R.id.avatar_view)
-        nameView = view.findViewById(R.id.name_view)
-        emailView = view.findViewById(R.id.email_view)
-
-        val loginButton = view.findViewById<Button>(R.id.login_button)
-        val registerButton = view.findViewById<Button>(R.id.register_button)
-        val logoutButton = view.findViewById<Button>(R.id.logout_button)
-        val toRegisterText = view.findViewById<TextView>(R.id.to_register_text)
-        val toLoginText = view.findViewById<TextView>(R.id.to_login_text)
-        val editAvatarButton = view.findViewById<ImageButton>(R.id.edit_avatar_button)
-
         if (UserSession.isAuthorized()) {
-            showProfile()
+            updateUI(ProfileState.PROFILE)
         } else {
-            showLoginForm()
+            updateUI(ProfileState.LOGIN)
         }
 
-        loginButton.setOnClickListener {
-            // TODO: login
-        }
+        binding.loginButton.setOnClickListener { onLoginButtonClickListener() }
 
-        registerButton.setOnClickListener {
-            // TODO: registration
-        }
+        binding.registerButton.setOnClickListener { onRegisterButtonClickListener() }
 
-        logoutButton.setOnClickListener {
+
+        binding.logoutButton.setOnClickListener {
             UserSession.clear()
-            showLoginForm()
+            LocalFavorites.clear()
+            updateUI(ProfileState.LOGIN)
         }
 
-        toRegisterText.setOnClickListener {
-            showRegisterForm()
-        }
+        binding.toRegisterText.setOnClickListener { updateUI(ProfileState.REGISTER) }
+        binding.toLoginText.setOnClickListener { updateUI(ProfileState.LOGIN) }
 
-        toLoginText.setOnClickListener {
-            showLoginForm()
-        }
-
-        editAvatarButton.setOnClickListener {
+        binding.editAvatarButton.setOnClickListener {
             Toast.makeText(requireContext(), "Выбор аватара (TODO)", Toast.LENGTH_SHORT).show()
         }
+
+        setupLoginFormListeners()
+        setupRegisterFormListeners()
     }
 
-    private fun showProfile() {
-        authorizationForms.visibility = View.GONE
-        profileLayout.visibility = View.VISIBLE
-        val user = UserSession.getUser()
-        nameView.text = user?.name ?: "Неизвестный"
-        emailView.text = user?.email ?: ""
+    @SuppressLint("SetTextI18n")
+    private fun onLoginButtonClickListener() {
+        hideKeyboard()
+        val login = binding.loginInput.text.toString().trim() // one field for email or username
+        val password = binding.passwordLogin.text.toString().trim()
+
+        var hasError = false
+
+        if (login.isEmpty()) {
+            binding.loginInputLayout.error = "Введите логин или email"
+            hasError = true
+        } else if (login.contains("@") && !android.util.Patterns.EMAIL_ADDRESS.matcher(login).matches()) {
+            binding.loginInputLayout.error = "Некорректный email"
+            hasError = true
+        } else {
+            binding.loginInputLayout.error = null
+        }
+
+        if (password.isEmpty()) {
+            binding.passwordLoginLayout.error = "Введите пароль"
+            hasError = true
+        } else {
+            binding.passwordLoginLayout.error = null
+        }
+
+        if (hasError) return
+
+        binding.loginFormError.visibility = View.GONE
+        binding.loginFormError.text = ""
+
+        lifecycleScope.launch {
+            try {
+                val response = ApiClient.authApi.login(login, password)
+
+                UserSession.saveToken(response.accessToken)
+                UserSession.saveUser(response.user)
+                updateUI(ProfileState.PROFILE)
+            } catch (_: IOException) {
+                binding.loginFormError.visibility = View.VISIBLE
+                binding.loginFormError.text = "Сервер недоступен. Проверьте интернет"
+            } catch (e: HttpException) {
+                when (e.code()) {
+                    400 -> {
+                        binding.loginFormError.visibility = View.VISIBLE
+                        binding.loginFormError.text = "Некорректные данные"
+                    }
+                    401 -> {
+                        binding.passwordLoginLayout.error = "Неверный логин или пароль"
+                    }
+                    else -> {
+                        binding.loginFormError.visibility = View.VISIBLE
+                        binding.loginFormError.text = "Ошибка сервера: ${e.code()}"
+                    }
+                }
+            } catch (_: Exception) {
+                binding.loginFormError.visibility = View.VISIBLE
+                binding.loginFormError.text = "Неизвестная ошибка"
+            }
+        }
     }
 
-    private fun showLoginForm() {
-        authorizationForms.visibility = View.VISIBLE
-        profileLayout.visibility = View.GONE
-        loginForm.visibility = View.VISIBLE
-        registerForm.visibility = View.GONE
+
+    @SuppressLint("SetTextI18n")
+    private fun onRegisterButtonClickListener() {
+        hideKeyboard()
+        val username = binding.nameRegister.text.toString().trim()
+        val email = binding.emailRegister.text.toString().trim()
+        val password = binding.passwordRegister.text.toString().trim()
+        val repeatPassword = binding.passwordRegisterRepeat.text.toString().trim()
+
+        var hasError = false
+
+        if (username.isEmpty()) {
+            binding.nameRegisterLayout.error = "Введите имя"
+            hasError = true
+        } else if (username.length < 3 || !username.matches(Regex("^[a-zA-Z0-9_]+$"))) {
+            binding.nameRegisterLayout.error = "Логин должен быть ≥3 символов, только буквы, цифры и _"
+            hasError = true
+        } else {
+            binding.nameRegisterLayout.error = null
+        }
+
+        if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            binding.emailRegisterLayout.error = "Неверный email"
+            hasError = true
+        } else {
+            binding.emailRegisterLayout.error = null
+        }
+
+        if (password.length < 6) {
+            binding.passwordRegisterLayout.error = "Пароль должен быть ≥ 6 символов"
+            hasError = true
+        } else {
+            binding.passwordRegisterLayout.error = null
+        }
+
+        if (password != repeatPassword) {
+            binding.passwordRegisterRepeatLayout.error = "Пароли не совпадают"
+            hasError = true
+        } else {
+            binding.passwordRegisterRepeatLayout.error = null
+        }
+
+        if (hasError) return
+
+        binding.registerFormError.visibility = View.GONE
+        binding.registerFormError.text = ""
+
+        lifecycleScope.launch {
+            try {
+                val response = ApiClient.authApi.register(
+                    username.toRequestBody("text/plain".toMediaType()),
+                    password.toRequestBody("text/plain".toMediaType()),
+                    email.toRequestBody("text/plain".toMediaType()),
+                    null
+                )
+                UserSession.saveToken(response.accessToken)
+                UserSession.saveUser(response.user)
+                updateUI(ProfileState.PROFILE)
+            } catch (_: IOException) {
+                // network error
+                binding.registerFormError.visibility = View.VISIBLE
+                binding.registerFormError.text = "Сервер недоступен. Проверьте интернет соединение"
+            } catch (e: HttpException) {
+                // server error
+                when (e.code()) {
+                    400 -> {
+                        binding.registerFormError.visibility = View.VISIBLE
+                        binding.registerFormError.text = "Некорректные данные"
+                    }
+                    409 -> {
+                        val body = e.response()?.errorBody()?.string() ?: ""
+                        if (body.contains("Email")) {
+                            binding.emailRegisterLayout.error = "Email уже используется"
+                        }
+                        if (body.contains("Username")) {
+                            binding.nameRegisterLayout.error = "Логин уже используется"
+                        }
+                    }
+                    else -> {
+                        binding.registerFormError.visibility = View.VISIBLE
+                        binding.registerFormError.text = "Ошибка сервера: ${e.code()}"
+                    }
+                }
+            } catch (_: Exception) {
+                binding.registerFormError.visibility = View.VISIBLE
+                binding.registerFormError.text = "Неизвестная ошибка"
+            }
+        }
     }
 
-    private fun showRegisterForm() {
-        authorizationForms.visibility = View.VISIBLE
-        profileLayout.visibility = View.GONE
-        loginForm.visibility = View.GONE
-        registerForm.visibility = View.VISIBLE
+    @SuppressLint("ServiceCast")
+    private fun hideKeyboard() {
+        val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(requireView().windowToken, 0)
+    }
+
+    private fun setupLoginFormListeners() {
+        val fields = listOf(
+            binding.loginInputLayout,
+            binding.passwordLoginLayout
+        )
+
+        val editTexts = listOf(
+            binding.loginInput,
+            binding.passwordLogin
+        )
+
+        editTexts.forEachIndexed { index, editText ->
+            editText.addTextChangedListener {
+                fields[index].error = null
+                binding.loginFormError.visibility = View.GONE
+            }
+        }
+    }
+
+    private fun setupRegisterFormListeners() {
+        val fields = listOf(
+            binding.nameRegisterLayout,
+            binding.emailRegisterLayout,
+            binding.passwordRegisterLayout,
+            binding.passwordRegisterRepeatLayout
+        )
+
+        val editTexts = listOf(
+            binding.nameRegister,
+            binding.emailRegister,
+            binding.passwordRegister,
+            binding.passwordRegisterRepeat
+        )
+
+        editTexts.forEachIndexed { index, editText ->
+            editText.addTextChangedListener {
+                fields[index].error = null
+                binding.registerFormError.visibility = View.GONE
+            }
+        }
+    }
+
+    private enum class ProfileState { LOGIN, REGISTER, PROFILE }
+
+    private fun updateUI(state: ProfileState) {
+        when(state) {
+            ProfileState.LOGIN -> {
+                binding.authorizationForms.visibility = View.VISIBLE
+                binding.loginForm.visibility = View.VISIBLE
+                binding.titleView.text = "Вход"
+                binding.registerForm.visibility = View.GONE
+                binding.profileLayout.visibility = View.GONE
+            }
+            ProfileState.REGISTER -> {
+                binding.authorizationForms.visibility = View.VISIBLE
+                binding.registerForm.visibility = View.VISIBLE
+                binding.titleView.text = "Регистрация"
+                binding.loginForm.visibility = View.GONE
+                binding.profileLayout.visibility = View.GONE
+            }
+            ProfileState.PROFILE -> {
+                binding.authorizationForms.visibility = View.GONE
+                binding.profileLayout.visibility = View.VISIBLE
+                binding.titleView.text = "Профиль"
+                val user = UserSession.getUser()
+                binding.nameView.text = user?.username ?: "Неизвестный"
+                binding.emailView.text = user?.email ?: ""
+            }
+        }
     }
 
     companion object {

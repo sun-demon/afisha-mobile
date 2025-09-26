@@ -44,7 +44,7 @@ android {
     }
 
     buildFeatures {
-//        viewBinding = true
+        viewBinding = true
     }
 }
 
@@ -60,7 +60,8 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.gson)
     implementation(libs.coil)
-//    implementation("io.coil-kt:coil-compose:2.6.1")
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
