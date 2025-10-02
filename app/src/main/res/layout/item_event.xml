@@ -54,12 +54,13 @@
 
     <ImageView
         android:id="@+id/ticket_icon"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
         android:src="@drawable/icon_ticket_green"
+        android:rotation="90"
         android:contentDescription="@string/title_my_tickets"
-        android:layout_margin="6dp"
-        android:padding="6dp"
+        android:layout_margin="3dp"
+        android:padding="3dp"
         app:layout_constraintRight_toRightOf="@id/image_view"
         app:layout_constraintTop_toTopOf="@id/image_view"
         android:visibility="gone"/>
