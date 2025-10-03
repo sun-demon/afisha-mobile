@@ -2,29 +2,46 @@ package ru.variiix.afisha.fragments
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import com.bumptech.glide.Glide
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.HttpException
+import ru.variiix.afisha.R
 import ru.variiix.afisha.databinding.FragmentProfileBinding
 import ru.variiix.afisha.network.ApiClient
 import ru.variiix.afisha.utils.LocalFavorites
 import ru.variiix.afisha.utils.UserSession
 import java.io.IOException
+import kotlin.coroutines.cancellation.CancellationException
 
 
 class ProfileFragment : Fragment() {
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
+    private var avatarUri: Uri? = null
+    private val pickImage = registerForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            avatarUri = it
+            binding.avatarImage.setImageURI(it)
+        }
+    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -57,6 +74,8 @@ class ProfileFragment : Fragment() {
         binding.logoutButton.setOnClickListener {
             UserSession.clear()
             LocalFavorites.clear()
+            clearLoginForm()
+            clearRegisterForm()
             updateUI(ProfileState.LOGIN)
         }
 
@@ -64,12 +83,34 @@ class ProfileFragment : Fragment() {
         binding.toLoginText.setOnClickListener { updateUI(ProfileState.LOGIN) }
 
         binding.editAvatarButton.setOnClickListener {
-            Toast.makeText(requireContext(), "Выбор аватара (TODO)", Toast.LENGTH_SHORT).show()
+            pickImage.launch("image/*")
         }
 
         setupLoginFormListeners()
         setupRegisterFormListeners()
     }
+
+    private fun clearLoginForm() {
+        binding.loginInput.setText("")
+        binding.passwordLogin.setText("")
+        binding.loginInputLayout.error = null
+        binding.passwordLoginLayout.error = null
+        binding.loginFormError.visibility = View.GONE
+    }
+
+    private fun clearRegisterForm() {
+        binding.nameRegister.setText("")
+        binding.emailRegister.setText("")
+        binding.passwordRegister.setText("")
+        binding.passwordRegisterRepeat.setText("")
+        binding.nameRegisterLayout.error = null
+        binding.emailRegisterLayout.error = null
+        binding.passwordRegisterLayout.error = null
+        binding.passwordRegisterRepeatLayout.error = null
+        binding.registerFormError.visibility = View.GONE
+        binding.avatarImage.setImageResource(R.drawable.icon_avatar)
+    }
+
 
     @SuppressLint("SetTextI18n")
     private fun onLoginButtonClickListener() {
@@ -101,13 +142,15 @@ class ProfileFragment : Fragment() {
         binding.loginFormError.visibility = View.GONE
         binding.loginFormError.text = ""
 
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             try {
                 val response = ApiClient.authApi.login(login, password)
 
                 UserSession.saveToken(response.accessToken)
                 UserSession.saveUser(response.user)
                 updateUI(ProfileState.PROFILE)
+            } catch (e: CancellationException) {
+                Log.w(ProfileFragment::class.java.simpleName, e.message.toString())
             } catch (_: IOException) {
                 binding.loginFormError.visibility = View.VISIBLE
                 binding.loginFormError.text = "Сервер недоступен. Проверьте интернет"
@@ -179,17 +222,28 @@ class ProfileFragment : Fragment() {
         binding.registerFormError.visibility = View.GONE
         binding.registerFormError.text = ""
 
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             try {
+                val avatarPart = avatarUri?.let { uri ->
+                    val stream = requireContext().contentResolver.openInputStream(uri)!!
+                    val bytes = stream.readBytes()
+                    stream.close()
+
+                    val requestFile = bytes.toRequestBody("image/*".toMediaType())
+                    MultipartBody.Part.createFormData("avatar", "avatar.jpg", requestFile)
+                }
+
                 val response = ApiClient.authApi.register(
                     username.toRequestBody("text/plain".toMediaType()),
                     password.toRequestBody("text/plain".toMediaType()),
                     email.toRequestBody("text/plain".toMediaType()),
-                    null
+                    avatarPart
                 )
                 UserSession.saveToken(response.accessToken)
                 UserSession.saveUser(response.user)
                 updateUI(ProfileState.PROFILE)
+            } catch (e: CancellationException) {
+                Log.w(ProfileFragment::class.java.simpleName, e.message.toString())
             } catch (_: IOException) {
                 // network error
                 binding.registerFormError.visibility = View.VISIBLE
@@ -280,6 +334,7 @@ class ProfileFragment : Fragment() {
                 binding.titleView.text = "Вход"
                 binding.registerForm.visibility = View.GONE
                 binding.profileLayout.visibility = View.GONE
+                clearLoginForm()
             }
             ProfileState.REGISTER -> {
                 binding.authorizationForms.visibility = View.VISIBLE
@@ -287,6 +342,7 @@ class ProfileFragment : Fragment() {
                 binding.titleView.text = "Регистрация"
                 binding.loginForm.visibility = View.GONE
                 binding.profileLayout.visibility = View.GONE
+                clearRegisterForm()
             }
             ProfileState.PROFILE -> {
                 binding.authorizationForms.visibility = View.GONE
@@ -295,6 +351,16 @@ class ProfileFragment : Fragment() {
                 val user = UserSession.getUser()
                 binding.nameView.text = user?.username ?: "Неизвестный"
                 binding.emailView.text = user?.email ?: ""
+
+                val avatarUrl = user?.avatarUrl
+                if (avatarUrl != null) {
+                    Glide.with(this)
+                        .load("https://afisha.ddns.net/users/${user.id}/avatar")
+                        .circleCrop() // round image
+                        .into(binding.avatarView)
+                } else {
+                    binding.avatarView.setImageResource(R.drawable.icon_user_black)
+                }
             }
         }
     }

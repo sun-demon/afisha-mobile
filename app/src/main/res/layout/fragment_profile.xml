@@ -185,16 +185,18 @@
                     android:layout_marginBottom="20dp">
 
                     <!-- round avatar -->
-                    <ImageView
+                    <com.google.android.material.imageview.ShapeableImageView
                         android:id="@+id/avatar_image"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:contentDescription="@string/avatar"
-                        android:src="@drawable/icon_user_black"
                         android:scaleType="centerCrop"
-                        android:background="@drawable/background_circle_pink_purple"
-                        android:padding="8dp"
-                        app:tint="@color/white" />
+                        android:padding="2dp"
+                        android:src="@drawable/icon_avatar"
+                        app:strokeColor="@color/black"
+                        app:strokeWidth="2dp"
+                        app:shapeAppearanceOverlay="@style/CircleImage"/>
+
 
                     <!-- edit button (right bottom) -->
                     <ImageButton
@@ -336,15 +338,18 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent">
 
-                <ImageView
+                <com.google.android.material.imageview.ShapeableImageView
                     android:id="@+id/avatar_view"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/icon_user_black"
-                    android:background="@drawable/background_circle_pink_purple"
                     android:contentDescription="@string/avatar"
-                    app:tint="@color/white" />
+                    android:padding="2dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/icon_avatar"
+                    app:strokeColor="@color/black"
+                    app:strokeWidth="2dp"
+                    app:shapeAppearanceOverlay="@style/CircleImage"/>
+
             </FrameLayout>
 
             <TextView

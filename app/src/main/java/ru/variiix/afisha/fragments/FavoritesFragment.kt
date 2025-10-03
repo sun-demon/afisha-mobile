@@ -25,6 +25,7 @@ import ru.variiix.afisha.models.User
 import ru.variiix.afisha.network.ApiClient
 import ru.variiix.afisha.utils.LocalFavorites
 import ru.variiix.afisha.utils.UserSession
+import kotlin.coroutines.cancellation.CancellationException
 
 
 class FavoritesFragment : Fragment() {
@@ -108,7 +109,7 @@ class FavoritesFragment : Fragment() {
 
     private fun onFavoriteClick(event: Event) {
         if (UserSession.isAuthorized()) {
-            lifecycleScope.launch {
+            viewLifecycleOwner.lifecycleScope.launch {
                 val token = UserSession.getToken() ?: return@launch
                 try {
                     removeFavoriteFromServer(event.id, token)
@@ -121,6 +122,8 @@ class FavoritesFragment : Fragment() {
                     if (updatedList.isEmpty()) {
                         showMessage("У вас нет избранных мероприятий")
                     }
+                } catch (e: CancellationException) {
+                    Log.w(FavoritesFragment::class.java.simpleName, e.message.toString())
                 } catch (e: Exception) {
                     Log.e("Favorites", "Failed to remove favorite", e)
                 }
@@ -191,7 +194,7 @@ class FavoritesFragment : Fragment() {
 
         isLoading = true
         binding.progressBar.visibility = View.VISIBLE
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             try {
                 val newEvents = fetchEventsFromServer(currentRubric, offset, limit)
                 if (newEvents.isEmpty()) {
@@ -207,6 +210,8 @@ class FavoritesFragment : Fragment() {
                     adapter.submitList(updatedList)
                     offset += newEvents.size
                 }
+            } catch (e: CancellationException) {
+                Log.w(FavoritesFragment::class.java.simpleName, e.message.toString())
             } catch (e: Exception) {
                 if (adapter.currentList.isEmpty()) {
                     showMessage("Не удалось установить соединение с сервером")

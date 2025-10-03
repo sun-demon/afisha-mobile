@@ -25,6 +25,7 @@ import ru.variiix.afisha.models.Event
 import ru.variiix.afisha.network.ApiClient
 import ru.variiix.afisha.utils.LocalFavorites
 import ru.variiix.afisha.utils.UserSession
+import kotlin.coroutines.cancellation.CancellationException
 
 class EventsFragment : Fragment() {
     private var _binding: FragmentEventsBinding? = null
@@ -108,7 +109,7 @@ class EventsFragment : Fragment() {
 
     private fun onFavoriteClick(event: Event) {
         if (UserSession.isAuthorized()) {
-            lifecycleScope.launch {
+            viewLifecycleOwner.lifecycleScope.launch {
                 val token = UserSession.getToken() ?: return@launch
                 val isFavorite = LocalFavorites.contains(event.id)
 
@@ -120,6 +121,8 @@ class EventsFragment : Fragment() {
                         addFavoriteOnServer(event.id, token)
                         LocalFavorites.add(event.id)
                     }
+                } catch (e: CancellationException) {
+                    Log.w(EventsFragment::class.java.simpleName, e.message.toString())
                 } catch (e: Exception) {
                     Log.e("Favorites", "Failed to toggle favorite", e)
                 }
@@ -196,7 +199,7 @@ class EventsFragment : Fragment() {
         if (adapter.currentList.isEmpty()) {
             binding.progressBar.visibility = View.VISIBLE
         }
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             try {
                 val newEvents = fetchEventsFromServer(currentRubric, offset, limit)
                 if (newEvents.isEmpty()) {
@@ -212,6 +215,8 @@ class EventsFragment : Fragment() {
                     adapter.submitList(updatedList)
                     offset += newEvents.size
                 }
+            } catch (e: CancellationException) {
+                Log.w(EventsFragment::class.java.simpleName, e.message.toString())
             } catch (e: Exception) {
                 if (adapter.currentList.isEmpty()) {
                     showMessage("Не удалось установить соединение с сервером")
