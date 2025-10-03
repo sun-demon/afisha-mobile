@@ -22,7 +22,7 @@ interface AuthApi {
     suspend fun register(
         @Part("username") username: RequestBody,
         @Part("password") password: RequestBody,
-        @Part("email") email: RequestBody?,
-        @Part avatar: MultipartBody.Part?
+        @Part("email") email: RequestBody,
+        @Part avatar: MultipartBody.Part? = null
     ): AuthResponse
 }
