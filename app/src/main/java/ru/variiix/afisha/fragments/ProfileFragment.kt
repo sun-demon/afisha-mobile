@@ -355,7 +355,7 @@ class ProfileFragment : Fragment() {
                 val avatarUrl = user?.avatarUrl
                 if (avatarUrl != null) {
                     Glide.with(this)
-                        .load("https://afisha.ddns.net/users/${user.id}/avatar")
+                        .load("https://afisha.ddns.net/api/avatars/${user.id}")
                         .circleCrop() // round image
                         .into(binding.avatarView)
                 } else {
